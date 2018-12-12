@@ -33,12 +33,17 @@ const activeScrollReader = () => {
                 let elem = contents[i];
                 if (elem.nodeName === "#text") {
                     let text = $(elem).text().split(/(?=\.\s|,\s|;\s|\?\s|\!\s)/g).reduce((words, word) => {
-                        if (word.length) words.push(`<span class="scrollreading-word">${word}</span>`);
+                        if (word.replace(/\s/, '').length) words.push(`<span class="scrollreading-word">${word}</span>`);
                         return words;
                     }, []).join("");
                     finalHTML.push(text);
                 } else {
-                    finalHTML.push($(elem).addClass("scrollreading-word")[0].outerHTML);
+                    const isElementHasText = !!$(elem)[0].textContent
+                    const elementClassName = isElementHasText
+                        ? "scrollreading-word"
+                        : ""
+                    const element = $(elem).addClass(elementClassName)[0]
+                    finalHTML.push(element.outerHTML);
                 }
             }
             $(this).html(finalHTML.join(""));
@@ -88,6 +93,9 @@ const activeScrollReader = () => {
                     }
                 }
             }
+            if (!next.hasClass('scrollreading-word')) {
+                next = get_next(next);
+            }
             return next;
         };
 
@@ -101,6 +109,9 @@ const activeScrollReader = () => {
                         prev = elem.find(".scrollreading-word:last-child"); break;
                     }
                 }
+            }
+            if (!prev.hasClass('scrollreading-word')) {
+                prev = get_prev(prev);
             }
             return prev;
         };
