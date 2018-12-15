@@ -62,6 +62,7 @@ const activeScrollReader = () => {
                             const totalWords = textArray.length;
                             const lastIndex = totalWords - 1;
                             const isWordStartWithPunctuation = isPunctuation(word[0])
+
                             if (isWordStartWithPunctuation) {
                                 const hasPreviousText = !!textArray[lastIndex];
 
@@ -72,9 +73,15 @@ const activeScrollReader = () => {
                                 const tagInfo = getTagInfo(lastHTML);
 
                                 if (hasPreviousText) {
+                                    // the previous text node does exists
+                                    // then we shall append the punctuation to it
                                     const lastWord = tagInfo.textContent;
                                     textArray[lastIndex] = `<span class="scrollreading-word">${lastWord}${word[0]}</span>`
                                 } else {
+                                    // previous text sentence is not found
+                                    // which means the previous sentence is in an html tag
+                                    // and not a text node so we have to append it to that
+                                    // last html tag
                                     const lastTag = finalHTML[finalHTML.length - 1];
                                     const tagName = tagInfo.tagName;
                                     const closeTag = `</${tagName}>`;
@@ -83,6 +90,8 @@ const activeScrollReader = () => {
                                     finalHTML[finalHTML.length - 1] = newTag;
                                 }
                             }
+                            // if the word start with punctuation then that
+                            // punctuation should be removed
                             const finalWord = isWordStartWithPunctuation
                                 ? word.slice(1)
                                 : word;
